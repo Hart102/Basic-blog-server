@@ -95,3 +95,5 @@ module.exports = { get_posts, create_posts, update_post };
 //     "chunksUploaded": 1
 
 // INSERT INTO `blog_posts`(`id`, `imgId`, `title`, `text`) VALUES ('[value-1]','[value-2]','[value-3]','[value-4]')
+
+aa;
