@@ -28,7 +28,6 @@ const create_posts = (req, res) => {
         ImgIdGenerator(Img),
         appwriteSDK.InputFile.fromBuffer(Img.buffer, Img.originalname)
       );
-
       promise.then((response) => {
         if (response) {
           // Perfom database operation
@@ -49,49 +48,88 @@ const create_posts = (req, res) => {
   }
 };
 
-// Update Post
+// Update Blog Post
 const update_post = (req, res) => {
   try {
-    const Img = req.file ? req.file : "";
-    const { id, imgId, title, text } = req.body;
+    if (req.body || req.file) {
+      const postObject = req.body;
+      const Img = req.file ? req.file : "";
 
-    const isPreviousImg = ImgIdGenerator(Img) == imgId ? true : false;
-    // res.json(isPreviousImg);
+      // If New image, get new image Id, else get previous image Id
+      const IMAGE_ID =
+        postObject.Img_Id == ImgIdGenerator(Img)
+          ? postObject.Img_Id
+          : ImgIdGenerator(Img);
 
-    // If new image is not the same as the previous image, delete image
-    if (!isPreviousImg) {
-      storage.deleteFile(bucketId, `${imgId}`);
-      // const appwriteImages = storage.listFiles(bucketId);
-      // if (appwriteImages) res.json(appwriteImages);
+      // Reused
+      const update_article = (ImageId, postObjcet) => {
+        if (postObjcet) {
+          const sql = `UPDATE blog_posts SET imgId = ?, title = ?, text = ? WHERE id = "${postObjcet.id}"`;
+          return connection.query(
+            sql,
+            [ImageId, postObjcet.title, postObjcet.text],
+            (err) => {
+              if (err)
+                return res.json({
+                  error: "post not updated. please try again.",
+                });
+              res.json({ success: "post updated" });
+            }
+          );
+        }
+      };
+
+      // Update only text if the previous Image still exists
+      if (postObject.Img_Id == ImgIdGenerator(Img))
+        return update_article(IMAGE_ID, postObject);
+
+      // Update both text and image if a new image is provided
+      if (Img && postObject.Img_Id !== ImgIdGenerator(Img)) {
+        storage.deleteFile(bucketId, postObject.Img_Id); // Delete previous Image if a new image is provided
+
+        setTimeout(() => {
+          // Replace deleted image with a new image
+          const promise = storage.createFile(
+            bucketId,
+            ImgIdGenerator(Img),
+            appwriteSDK.InputFile.fromBuffer(Img.buffer, Img.originalname)
+          );
+          promise
+            .then((response) => {
+              if (response) update_article(IMAGE_ID, postObject); // Perform Database operation
+            })
+            .catch((err) =>
+              res.json({ error: "post not updated. please try again." })
+            );
+        }, 1000);
+      }
     }
-
-    // if (Img || req.body) {
-    //   // If new image is not the same as the previous image, replace image
-    //   if (isNewImage) {
-    //     const promise = storage.createFile(
-    //       bucketId,
-    //       ImgIdGenerator(Img),
-    //       appwriteSDK.InputFile.fromBuffer(Img.buffer, Img.originalname)
-    //     );
-    //   }
-    // }
   } catch (error) {
     res.json({ error: "Server Error" });
   }
 };
 
-module.exports = { get_posts, create_posts, update_post };
+// Delete Blog Post
+const delete_post = (req, res) => {
+  try {
+    if (req.body) {
+      const { id, Img_Id } = req.body;
 
-//  "$id": "Screenshotfrompng",
-//     "bucketId": "654eebaf29a4647e9656",
-//     "$createdAt": "2023-11-11T03:37:57.143+00:00",
-//     "$updatedAt": "2023-11-11T03:37:57.143+00:00",
-//     "$permissions": [],
-//     "name": "Screenshot from 2023-10-30 11-50-41.png",
-//     "signature": "0ec9aa12929f1b616bbf01778818f0e3",
-//     "mimeType": "image/png",
-//     "sizeOriginal": 140701,
-//     "chunksTotal": 1,
-//     "chunksUploaded": 1
+      // Delete image from appwrite
+      storage.deleteFile(bucketId, Img_Id);
 
-// INSERT INTO `blog_posts`(`id`, `imgId`, `title`, `text`) VALUES ('[value-1]','[value-2]','[value-3]','[value-4]')
+      // Delete post from database
+      const sql = `DELETE FROM blog_posts WHERE id="${id}"`;
+      connection.query(sql, (err, response) =>
+        err
+          ? res.json({ error: "post not deleted. please try again." })
+          : res.json({ success: "post deleted" })
+      );
+    }
+  } catch (error) {
+    res.json({ error: "Server Error" });
+  }
+};
+
+module.exports = { get_posts, create_posts, update_post, delete_post };
+
