@@ -13,6 +13,7 @@ const { ImageUploader } = require("./util/fileUploader");
 // Middlewares
 app.use(cors({ origin: "*" }));
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 // Routes
 app.use("/blog", ImageUploader.single("file"), postRoutes) // Posts Route

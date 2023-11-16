@@ -13,7 +13,7 @@ const {
 router.get("/", get_posts);
 router.post("/create", create_posts);
 router.put("/update", update_post);
-router.delete("/delete", delete_post);
+router.post("/delete", delete_post);
 
 module.exports = router;
 

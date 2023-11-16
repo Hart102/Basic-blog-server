@@ -19,11 +19,13 @@ const ImageUploader = multer({ storage: Upload });
 
 // Generate Id for images
 const ImgIdGenerator = (imgObject) => {
-  const ID =
-    imgObject.originalname.replace(/[^a-z^A-Z]/g, "").length > 20
-      ? imgObject.originalname.replace(/[^a-z^A-Z]/g, "").slice(0, 20)
-      : imgObject.originalname.replace(/[^a-z^A-Z]/g, "");
-  return ID;
+  if (imgObject) {
+    const ID =
+      imgObject.originalname.replace(/[^a-z^A-Z]/g, "").length > 20
+        ? imgObject.originalname.replace(/[^a-z^A-Z]/g, "").slice(0, 20)
+        : imgObject.originalname.replace(/[^a-z^A-Z]/g, "");
+    return ID;
+  }
 };
 
 module.exports = { ImageUploader, storage, bucketId, ImgIdGenerator };

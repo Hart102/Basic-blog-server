@@ -18,31 +18,40 @@ const get_posts = (req, res) => {
 // Create New Blog Posts
 const create_posts = (req, res) => {
   try {
-    if (req.file) {
-      const Img = req.file;
-      const { title, text } = req.body;
+    if (!req.file) return res.json({ error: "please choose image" });
+    const Img = req.file;
 
-      // Upload Image to appwrite
-      const promise = storage.createFile(
-        bucketId,
-        ImgIdGenerator(Img),
-        appwriteSDK.InputFile.fromBuffer(Img.buffer, Img.originalname)
-      );
-      promise.then((response) => {
-        if (response) {
-          // Perfom database operation
-          const sql =
-            "INSERT INTO `blog_posts`(`imgId`, `title`, `text`) VALUES (?, ?, ?)";
-          connection.query(sql, [response.$id, title, text], (err) => {
+    const newPost = (postObect, Img_Id) => {
+      if (postObect) {
+        const sql = `INSERT INTO blog_posts (title, text, category, imgId) VALUES (?, ?, ?, ?)`;
+
+        connection.query(
+          sql,
+          [postObect.title, postObect.text, postObect.category, Img_Id],
+          (err) => {
             if (err)
               return res.json({
                 error: "post not published, please try again.",
               });
             res.json({ success: "post published" });
-          });
-        }
-      });
-    }
+          }
+        );
+      }
+    };
+
+    // Upload Image to appwrite
+    const promise = storage.createFile(
+      bucketId,
+      ImgIdGenerator(Img),
+      appwriteSDK.InputFile.fromBuffer(Img.buffer, Img.originalname)
+    );
+    promise.then((response) => {
+      if (response) {
+        // Perfom database operation
+        newPost(req.body, response.$id);
+      }
+    });
+    // }
   } catch (error) {
     res.json({ error: "Server Error" });
   }
@@ -64,10 +73,10 @@ const update_post = (req, res) => {
       // Reused
       const update_article = (ImageId, postObjcet) => {
         if (postObjcet) {
-          const sql = `UPDATE blog_posts SET imgId = ?, title = ?, text = ? WHERE id = "${postObjcet.id}"`;
+          const sql = `UPDATE  blog_posts  SET title=?, text=?, category=?, imgId=? WHERE id="${postObjcet.id}"`;
           return connection.query(
             sql,
-            [ImageId, postObjcet.title, postObjcet.text],
+            [postObjcet.title, postObjcet.text, postObjcet.category, ImageId],
             (err) => {
               if (err)
                 return res.json({
@@ -80,12 +89,10 @@ const update_post = (req, res) => {
       };
 
       // Update only text if the previous Image still exists
-      if (postObject.Img_Id == ImgIdGenerator(Img))
-        return update_article(IMAGE_ID, postObject);
+      if (!Img) return update_article(postObject.imgId, postObject);
 
-      // Update both text and image if a new image is provided
-      if (Img && postObject.Img_Id !== ImgIdGenerator(Img)) {
-        storage.deleteFile(bucketId, postObject.Img_Id); // Delete previous Image if a new image is provided
+      if (Img) {
+        storage.deleteFile(bucketId, postObject.imgId); // Delete previous Image if a new image is provided
 
         setTimeout(() => {
           // Replace deleted image with a new image
@@ -96,16 +103,15 @@ const update_post = (req, res) => {
           );
           promise
             .then((response) => {
-              if (response) update_article(IMAGE_ID, postObject); // Perform Database operation
+              // Update post with Image
+              if (response) update_article(IMAGE_ID, postObject);
             })
-            .catch((err) =>
-              res.json({ error: "post not updated. please try again." })
-            );
+            .catch((err) => res.json({ error: err }));
         }, 1000);
       }
     }
   } catch (error) {
-    res.json({ error: "Server Error" });
+    res.json({ error: error });
   }
 };
 
@@ -116,11 +122,13 @@ const delete_post = (req, res) => {
       const { id, Img_Id } = req.body;
 
       // Delete image from appwrite
-      storage.deleteFile(bucketId, Img_Id);
+      if (Img_Id) {
+        storage.deleteFile(bucketId, Img_Id);
+      }
 
       // Delete post from database
       const sql = `DELETE FROM blog_posts WHERE id="${id}"`;
-      connection.query(sql, (err, response) =>
+      connection.query(sql, (err) =>
         err
           ? res.json({ error: "post not deleted. please try again." })
           : res.json({ success: "post deleted" })
