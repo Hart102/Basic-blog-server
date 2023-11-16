@@ -1,11 +1,11 @@
 # Dribble stories blog server
-Built with node.js, Mysql and appwrite
+Built with node.js, Mysql, appwrite
 
 ## Tool needed to run this programm
-node
-xampp
-code 
-editor
+node,
+xampp,
+code,
+editor,
 appwrite account
 
 ## How to run this programm
