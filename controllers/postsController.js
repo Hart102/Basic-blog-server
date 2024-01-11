@@ -39,10 +39,11 @@ const create_posts = (req, res) => {
       }
     };
 
+    const uniqueId = Math.random();
     // Upload Image to appwrite
     const promise = storage.createFile(
       bucketId,
-      ImgIdGenerator(Img),
+      ImgIdGenerator(Img) + uniqueId,
       appwriteSDK.InputFile.fromBuffer(Img.buffer, Img.originalname)
     );
     promise.then((response) => {
@@ -53,7 +54,7 @@ const create_posts = (req, res) => {
     });
     // }
   } catch (error) {
-    res.json({ error: "Server Error" });
+    res.json({ error: "Please chec your network connection" });
   }
 };
 
@@ -80,7 +81,8 @@ const update_post = (req, res) => {
             (err) => {
               if (err)
                 return res.json({
-                  error: "post not updated. please try again.",
+                  error:
+                    "post not updated. please check your newwork connection.",
                 });
               res.json({ success: "post updated" });
             }
@@ -135,7 +137,7 @@ const delete_post = (req, res) => {
       );
     }
   } catch (error) {
-    res.json({ error: "Server Error" });
+    res.json({ error: "Please check your network connection" });
   }
 };
 
