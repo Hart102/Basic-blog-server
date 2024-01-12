@@ -2,8 +2,9 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const cors = require("cors");
+require("dotenv").config();
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 const expDate = 60 * 60 * 1000 * 24; // 1 hour 1 day
 
