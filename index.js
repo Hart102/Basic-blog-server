@@ -42,4 +42,3 @@ app.use("/blog", ImageUploader.single("file"), postRoutes); // Posts Route
 app.use("/blog", authRoutes);
 
 app.listen(port, () => console.log(`App running on port ${port}`));
-a;
