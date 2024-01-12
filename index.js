@@ -35,6 +35,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Routes
+app.get("/", (req, res) => {
+  res.json("Welcome to my blog server");
+});
 app.use("/blog", ImageUploader.single("file"), postRoutes); // Posts Route
 app.use("/blog", authRoutes);
 
