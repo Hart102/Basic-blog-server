@@ -5,11 +5,12 @@ const { connection } = require("../util/DBconnection/index");
 // Get all Existing Blog Posts
 const get_posts = (req, res) => {
   try {
-    const sql = "SELECT * FROM `blog_posts`";
-    connection.query(sql, (err, response) => {
-      if (err) return res.json({ error: err });
-      res.json({ success: response });
-    });
+    res.json("posts endpoint");
+    // const sql = "SELECT * FROM `blog_posts`";
+    // connection.query(sql, (err, response) => {
+    //   if (err) return res.json({ error: err });
+    //   res.json({ success: response });
+    // });
   } catch (error) {
     res.json({ error: "Server Error" });
   }
