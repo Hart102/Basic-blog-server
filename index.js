@@ -18,7 +18,8 @@ app.use(
       httpOnly: true,
       maxAge: expDate,
       // secure: false,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV || "development",
+      // secure: process.env.NODE_ENV === "production",
       sameSite: "strict", // 'strict'
       // sameSite: true, // 'strict'
     },
