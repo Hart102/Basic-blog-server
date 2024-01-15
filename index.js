@@ -44,10 +44,8 @@ app.get("/", (req, res) => {
 });
 
 
-app.use("/blog", ImageUploader.single("file"), postRoutes); // Posts Route
-
-
-
-app.use("/blog", authRoutes);
+// app.use("/blog", ImageUploader.single("file"), postRoutes); // Posts Route
+app.use("/api/posts", postRoutes); // Posts Route
+app.use("/api/user", authRoutes);
 
 app.listen(port, () => console.log(`App running on port ${port}`));
