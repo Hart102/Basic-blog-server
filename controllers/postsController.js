@@ -11,6 +11,7 @@ const upload = ImageUploader.single("file");
 // Get all Existing Blog Posts
 const get_posts = (req, res) => {
   try {
+    return res.json("POST ROUTES");
     const sql = "SELECT * FROM `blog_posts`";
     connection.query(sql, (err, response) => {
       if (err) return res.json({ error: err });
