@@ -47,9 +47,9 @@ app.get("/", (req, res) => {
 // app.use("/blog", ImageUploader.single("file"), postRoutes); // Posts Route
 
 
-app.get("/api/posts", (req, res) => {
-  res.json("POST ROUTES");
-});
+// app.get("/api/posts", (req, res) => {
+//   res.json("POST ROUTES");
+// });
 app.use("/api/posts", postRoutes); // Posts Route
 app.use("/api/user", authRoutes);
 

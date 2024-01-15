@@ -10,7 +10,7 @@ const {
 } = require("../controllers/postsController");
 
 // Routes
-// router.get("/", get_posts);
+router.get("/", get_posts);
 router.post("/create", create_posts);
 router.put("/update", update_post);
 router.post("/delete", delete_post);
