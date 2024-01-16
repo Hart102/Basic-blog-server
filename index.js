@@ -34,7 +34,7 @@ const authRoutes = require("./routes/authRoutes");
 const { ImageUploader } = require("./util/fileUploader");
 
 // Middlewares
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: "http://localhost:5173/" }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
