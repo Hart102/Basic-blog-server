@@ -43,24 +43,8 @@ app.get("/", (req, res) => {
   res.json("Welcome to my blog server");
 });
 
-// app.get("/api/posts", (req, res) => {
-//   res.json("Get all posts");
-// });
-
-// app.get("/api/posts/create", (req, res) => {
-//   res.json("Create post route");
-// });
-
-// app.get("/api/posts/edit", (req, res) => {
-//   res.json("Edit post route");
-// });
-
-// app.use("/blog", ImageUploader.single("file"), postRoutes); // Posts Route
-
-// app.get("/api/posts", (req, res) => {
-//   res.json("POST ROUTES");
-// });
 app.use("/api/posts", postRoutes); // Posts Route
 app.use("/api/user", authRoutes);
 
 app.listen(port, () => console.log(`App running on port ${port}`));
+

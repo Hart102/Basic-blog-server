@@ -8,10 +8,9 @@ const {
 const { connection } = require("../util/DBconnection/index");
 const upload = ImageUploader.single("file");
 
-// Get all Existing Blog Posts
+//====== Get all Existing Blog Posts======
 const get_posts = (req, res) => {
   try {
-    return res.json("POST ROUTES");
     const sql = "SELECT * FROM `blog_posts`";
     connection.query(sql, (err, response) => {
       if (err) return res.json({ error: err });
@@ -22,7 +21,7 @@ const get_posts = (req, res) => {
   }
 };
 
-// Create New Blog Posts
+//====== Create New Blog Posts======
 const create_posts = (req, res) => {
   try {
     upload(req, res, () => {
@@ -67,7 +66,7 @@ const create_posts = (req, res) => {
   }
 };
 
-// Update Blog Post
+//========= Update Blog Post=========
 const update_post = (req, res) => {
   try {
     upload(req, res, () => {
@@ -128,7 +127,7 @@ const update_post = (req, res) => {
   }
 };
 
-// Delete Blog Post
+//======== Delete Blog Post========
 const delete_post = (req, res) => {
   try {
     if (req.body) {
